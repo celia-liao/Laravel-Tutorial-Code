@@ -14,5 +14,11 @@ Route::get('/start', function () {
     return redirect()->route('welcome.page');
 });
 
+Route::get('/about', function () {
+    return view('about', [
+        'team' => 'Laravel Lovers',
+        'members' => ['Celia', 'Ruru', 'Tako']
+    ]);
+});
 
 
