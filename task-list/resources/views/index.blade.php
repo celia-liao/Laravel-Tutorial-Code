@@ -1,6 +1,6 @@
 {{-- 引入模板 --}}
 @extends('layouts.app')
-@section('title', 'The list of the books')
+@section('title', 'The list of the tasks')
 @section('content')
     <div>
         @if (count($tasks))
