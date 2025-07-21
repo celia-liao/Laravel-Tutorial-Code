@@ -23,19 +23,19 @@ Route::get('/tasks/create', function () {
 
 // 處理表單送出
 Route::post('/tasks', function (Request $request) {
+    // ✅ 驗證
     $data = $request->validate([
-        'title'=> 'required|max:255',
+        'title' => 'required|max:255',
         'description' => 'required',
         'long_description' => 'required',
     ]);
 
-    $task = new Task;
-    $task->title = $data['title'];
-    $task->description = $data['description'];
-    $task->long_description = $data['long_description'];
-    $task->save();
+    // ✅ 儲存
+    Task::create($data);
 
-    return redirect()->route('tasks.show', ['id' => $task->id]);
+    // ✅ 成功訊息存入 session
+    return redirect()->route('tasks.create')
+        ->with('success', '任務新增成功！');
 })->name('tasks.store');
 
 
