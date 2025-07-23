@@ -43,4 +43,24 @@ Route::get('/tasks/{id}', function ($id) { // 任務詳情頁（點進去看細�
     return view('show', ['task' => Task::findOrFail($id)]);
 })->name('tasks.show');
 
+// 顯示編輯頁面
+Route::get('/tasks/{id}/edit', function ($id) {
+    return view('edit', ['task' => Task::findOrFail($id)]);
+})->name('tasks.edit');
+
+// 接收更新資料
+Route::put('/tasks/{id}', function ($id, Request $request) {
+    $data = $request->validate([
+        'title' => 'required|max:255',
+        'description' => 'required',
+        'long_description' => 'required',
+    ]);
+
+    $task = Task::findOrFail($id);
+    $task->update($data);
+
+    return redirect()->route('tasks.show', ['id' => $task->id])
+        ->with('success', 'Task updated successfully');
+})->name('tasks.update');
+
 
