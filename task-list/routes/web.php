@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use App\Models\Task;
+use App\Http\Requests\TaskRequest;
 
 
 Route::get('/', function () { // 首頁自動轉向 /tasks
@@ -22,16 +23,9 @@ Route::get('/tasks/create', function () {
 })->name('tasks.create');
 
 // 處理表單送出
-Route::post('/tasks', function (Request $request) {
-    // ✅ 驗證
-    $data = $request->validate([
-        'title' => 'required|max:255',
-        'description' => 'required',
-        'long_description' => 'required',
-    ]);
-
+Route::post('/tasks', function (TaskRequest $request) {
     // ✅ 儲存
-    Task::create($data);
+    Task::create($request->validated());
 
     // ✅ 成功訊息存入 session
     return redirect()->route('tasks.create')
@@ -39,27 +33,20 @@ Route::post('/tasks', function (Request $request) {
 })->name('tasks.store');
 
 
-Route::get('/tasks/{id}', function ($id) { // 任務詳情頁（點進去看細節）
-    return view('show', ['task' => Task::findOrFail($id)]);
+Route::get('/tasks/{task}', function (Task $task) {
+    return view('show', compact('task'));
 })->name('tasks.show');
 
 // 顯示編輯頁面
-Route::get('/tasks/{id}/edit', function ($id) {
-    return view('edit', ['task' => Task::findOrFail($id)]);
+Route::get('/tasks/{task}/edit', function (Task $task) {
+    return view('edit', compact('task'));
 })->name('tasks.edit');
 
 // 接收更新資料
-Route::put('/tasks/{id}', function ($id, Request $request) {
-    $data = $request->validate([
-        'title' => 'required|max:255',
-        'description' => 'required',
-        'long_description' => 'required',
-    ]);
+Route::put('/tasks/{task}', function (Task $task, TaskRequest $request) {
+    $task->update($request->validated());
 
-    $task = Task::findOrFail($id);
-    $task->update($data);
-
-    return redirect()->route('tasks.show', ['id' => $task->id])
+    return redirect()->route('tasks.show', ['task' => $task])
         ->with('success', 'Task updated successfully');
 })->name('tasks.update');
 
